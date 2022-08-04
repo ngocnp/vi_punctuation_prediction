@@ -63,7 +63,7 @@ def load_from_zip(data_zip: str, data_set: str, lang: str):
 #         return data
 
 
-def load(path):
+def load_each_file(path):
     with open(path, encoding="utf-8") as f:
         lines = f.read().splitlines()
     words, labels = [], []
@@ -72,6 +72,14 @@ def load(path):
         words.append(parts[0])
         labels.append(parts[1])
     return words, labels
+
+
+def load(path):
+    data = []
+    for file in os.listdir(path):
+        each = load_each_file(os.path.join(path, file))
+        data.append(each)
+    return data
 
 
 def transform_to_language_model_file(data_zip: str,data_set:str, lang: str,result_path):

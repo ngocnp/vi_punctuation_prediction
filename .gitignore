@@ -11,7 +11,7 @@ venv.bak/
 *.txt
 *.png
 *.jpg
-*.json
+*/**/*.json
 *.db
 *.csv
 *.log

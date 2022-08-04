@@ -14,7 +14,8 @@ from pprint import pprint
 model_checkpoint = "trituenhantaoio/bert-base-vietnamese-uncased" # "bert-base-uncased"   #"trituenhantaoio/bert-base-vietnamese-uncased"
 tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
 
-label_2_id = {"0":0, ".":1, ",":2, "?":3, "!":4, ";":5}
+label_2_id = {"O": 0, ".": 1, ",": 2, "?": 3, "!": 4, ";": 5, ":": 6}
+
 
 def tokenize_and_align_data(data, stride=0):
     tokenizer_settings = {'is_split_into_words': True, #'return_offsets_mapping': True,
@@ -27,7 +28,7 @@ def tokenize_and_align_data(data, stride=0):
         doc_encoded_labels = []
         last_word_id = None
         for word_id in document.word_ids:
-            if word_id == None:  # or last_word_id == word_id:
+            if word_id is None or last_word_id == word_id:
                 doc_encoded_labels.append(-100)
             else:
                 # document_id = tokenized_inputs.overflow_to_sample_mapping[i]
@@ -50,9 +51,16 @@ def to_dataset(data, stride=0):
         token_type_ids += result['token_type_ids']
         input_ids += result['input_ids']
         attention_masks += result['attention_mask']
+    d = {'labels': labels, 'token_type_ids': token_type_ids, 'input_ids': input_ids, 'attention_mask': attention_masks}
+    for k, v in d.items():
+        print(k)
+        for e in v:
+            print(e)
+        print()
     return Dataset.from_dict(
         {'labels': labels, 'token_type_ids': token_type_ids, 'input_ids': input_ids, 'attention_mask': attention_masks})
 
-train_data = [load("/data/en/ca/train/train.tsv")]
-tokenized_dataset_train = to_dataset(train_data,stride=100)
+
+train_data = load("data/data_test")
+tokenized_dataset_train = to_dataset(train_data, stride=100)
 
