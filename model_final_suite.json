@@ -2,8 +2,8 @@
     {
         "id":16,
         "task":2,
-        "model":"roberta-large",
-        "languages":["en"],
+        "model":"FPTAI/vibert-base-cased",
+        "languages":["vi"],
         "augmentation":[""],
         "data_percentage":1,
         "use_token_type_ids":false,

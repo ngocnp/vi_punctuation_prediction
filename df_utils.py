@@ -1,5 +1,6 @@
-import re
+import random
 import os
+import shutil
 from tqdm import tqdm
 
 
@@ -141,12 +142,27 @@ def move_to_data_folder(folder, out_folder, name):
         with open(os.path.join(out_folder, name + file), "w") as f:
             f.write("\n".join(new_lines))
 
-print("TRAIN")
-train_files = os.listdir("data/vi/train")
-print(len(train_files), len([f for f in train_files if f.startswith("news_")]), len([f for f in train_files if f.startswith("novels")]))
-print("VALID")
-valid_files = os.listdir("data/vi/valid")
-print(len(valid_files), len([f for f in valid_files if f.startswith("news_")]), len([f for f in valid_files if f.startswith("novels")]))
-print("TEST")
-test_files = os.listdir("data/vi/test")
-print(len(test_files), len([f for f in test_files if f.startswith("news_")]), len([f for f in test_files if f.startswith("novels")]))
+
+def copy_subfiles(source_dir, dest_dir, num):
+    files = os.listdir(source_dir)
+    random_ids = random.sample(list(range(0, len(files))), k=num)
+    chosen_files = [files[i] for i in random_ids]
+    for file in chosen_files:
+        shutil.copy(os.path.join(source_dir, file), dest_dir)
+    print("Copy random {} files from {} to {}".format(num, source_dir, dest_dir))
+
+
+# print("TRAIN")
+# train_files = os.listdir("data/vi/train")
+# print(len(train_files), len([f for f in train_files if f.startswith("news_")]), len([f for f in train_files if f.startswith("novels")]))
+# print("VALID")
+# valid_files = os.listdir("data/vi/valid")
+# print(len(valid_files), len([f for f in valid_files if f.startswith("news_")]), len([f for f in valid_files if f.startswith("novels")]))
+# print("TEST")
+# test_files = os.listdir("data/vi/test")
+# print(len(test_files), len([f for f in test_files if f.startswith("news_")]), len([f for f in test_files if f.startswith("novels")]))
+
+
+copy_subfiles("/home/ngocnp/PycharmProjects/vi_punctuation_prediction/data/vi/valid",
+              "/home/ngocnp/PycharmProjects/vi_punctuation_prediction/data/vi/small_valid",
+              num=300)
