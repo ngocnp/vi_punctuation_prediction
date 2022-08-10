@@ -1,6 +1,8 @@
 import json
 import os
 import re
+import shutil
+
 from tqdm import tqdm
 
 
@@ -28,7 +30,8 @@ def get_from_huggingface():
 
 
 def get_vn_fairy_tales():
-    with open("/home/ngocnp/Downloads/vietnamese_data/Kho tàng truyện cổ tích Việt Nam - Quyển II - Nguyễn Đổng Chi_djvu.txt") as f:
+    with open(
+            "/home/ngocnp/Downloads/vietnamese_data/Kho tàng truyện cổ tích Việt Nam - Quyển II - Nguyễn Đổng Chi_djvu.txt") as f:
         lines = f.read().splitlines()
     data = lines[2055:48659]
     all_lines = []
@@ -47,7 +50,7 @@ def get_vn_fairy_tales():
             paragraph.append(line)
     i = 0
     while i < len(all_lines):
-        if len(all_lines[i]) < 20 :
+        if len(all_lines[i]) < 20:
             all_lines.pop(i)
         else:
             i = i + 1
@@ -122,15 +125,28 @@ def clean_vn_novel():
         f.write("\n".join(real_lines))
 
 
-with open("/home/ngocnp/Downloads/vietnamese_data/vn_text.txt") as f:
-    content1 = f.read()
-with open("/home/ngocnp/Downloads/vietnamese_data/topic_news.txt") as f:
-    content2 = f.read()
-with open("/home/ngocnp/Downloads/vietnamese_data/text-324.9 MB/clean_total.txt") as f:
-    content3 = f.read()
-if not content1.endswith("\n"):
-    content1 = content1 + "\n"
-if not content2.endswith("\n"):
-    content2 = content2 + "\n"
-with open("/home/ngocnp/Downloads/vietnamese_data/vn_nlp.txt", "w") as f:
-    f.write(content1 + content2 + content3)
+#
+# with open("/home/ngocnp/Downloads/vietnamese_data/vn_text.txt") as f:
+#     content1 = f.read()
+# with open("/home/ngocnp/Downloads/vietnamese_data/topic_news.txt") as f:
+#     content2 = f.read()
+# with open("/home/ngocnp/Downloads/vietnamese_data/text-324.9 MB/clean_total.txt") as f:
+#     content3 = f.read()
+# if not content1.endswith("\n"):
+#     content1 = content1 + "\n"
+# if not content2.endswith("\n"):
+#     content2 = content2 + "\n"
+# with open("/home/ngocnp/Downloads/vietnamese_data/vn_nlp.txt", "w") as f:
+#     f.write(content1 + content2 + content3)
+
+list_files = [os.path.join("data/vi/valid", file) for file in os.listdir("data/vi/valid")
+              if file.endswith(".txt")]
+print(len(list_files))
+folder_id = 0
+for i in range(0, len(list_files), 4000):
+    sub_files = list_files[i: i + 4000]
+    folder_name = os.path.join("data/vi/valid", "folder_" + str(folder_id))
+    os.mkdir(folder_name)
+    for file in sub_files:
+        shutil.move(file, folder_name)
+    folder_id += 1

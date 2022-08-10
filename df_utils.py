@@ -1,43 +1,8 @@
 import random
 import os
 import shutil
+from collections import Counter
 from tqdm import tqdm
-
-
-# def join(path1, path2, output):
-#     with open(path1, encoding="utf-8") as f:
-#         lines_1 = f.read()
-#     with open(path2,  encoding="utf-8") as f:
-#         lines_2 = f.read()
-#         if lines_1.endswith("\n"):
-#             total = lines_1 + lines_2
-#         else:
-#             total = lines_1 + "\n" + lines_2
-#     with open(output, "w") as f:
-#         f.write(total)
-#
-#
-# def count_labels(path):
-#     list_labels = {}
-#     with open(path, encoding="utf-8") as f:
-#         lines = f.read().splitlines()
-#     for line in lines:
-#         lab = line.split()[1]
-#         count = list_labels.get(lab, 0)
-#         count = count + 1
-#         list_labels[lab] = count
-#     print(list_labels)
-#
-#
-# def split_file(path, n_split, path1, path2):
-#     with open(path) as f:
-#         lines = f.read().splitlines()
-#     part1 = lines[:n_split]
-#     part2 = lines[n_split:]
-#     with open(path1, "w") as f:
-#         f.write("\n".join(part1))
-#     with open(path2, "w") as f:
-#         f.write("\n".join(part2))
 
 
 def fix_labels(path, new_path):
@@ -152,17 +117,46 @@ def copy_subfiles(source_dir, dest_dir, num):
     print("Copy random {} files from {} to {}".format(num, source_dir, dest_dir))
 
 
-# print("TRAIN")
-# train_files = os.listdir("data/vi/train")
-# print(len(train_files), len([f for f in train_files if f.startswith("news_")]), len([f for f in train_files if f.startswith("novels")]))
-# print("VALID")
-# valid_files = os.listdir("data/vi/valid")
-# print(len(valid_files), len([f for f in valid_files if f.startswith("news_")]), len([f for f in valid_files if f.startswith("novels")]))
-# print("TEST")
-# test_files = os.listdir("data/vi/test")
-# print(len(test_files), len([f for f in test_files if f.startswith("news_")]), len([f for f in test_files if f.startswith("novels")]))
+def replace_semicolon_by_comma():
+    def rep_punc(lines):
+        for i in range(len(lines)):
+            parts = lines[i].split()
+            if len(parts) != 2:
+                raise Exception("error in line {}".format(i))
+            if parts[1] == ";":
+                parts[1] = ","
+                lines[i] = " ".join(parts)
+        return lines
+    list_files = []
+    for r, d, f in os.walk("data/vi"):
+        list_files.extend([os.path.join(r, file) for file in f if file.endswith(".txt")])
+    for file in tqdm(list_files):
+        with open(file) as f:
+            lines = f.read().splitlines()
+        lines = rep_punc(lines)
+        new_file = file.replace("data/vi", "data/vi_fix")
+        with open(new_file, "w") as f:
+            f.write("\n".join(lines))
 
 
-copy_subfiles("/home/ngocnp/PycharmProjects/vi_punctuation_prediction/data/vi/valid",
-              "/home/ngocnp/PycharmProjects/vi_punctuation_prediction/data/vi/small_valid",
-              num=300)
+def count_labels(path):
+    list_files = []
+    counter = Counter()
+    for r, d, f in os.walk(path):
+        list_files.extend([os.path.join(r, file) for file in f if file.endswith(".txt")])
+    for file in tqdm(list_files):
+        with open(file) as f:
+            lines = f.read().splitlines()
+        list_labels = [l.split()[-1] for l in lines]
+        file_label_counter = Counter(list_labels)
+        counter.update(file_label_counter)
+    for k, v in counter.items():
+        print("{} {}".format(k, v))
+
+
+def join_train_and_test():
+    for file in os.listdir("data/vi/test"):
+        if file.endswith(".txt"):
+            shutil.copyfile(os.path.join("data/vi/test", file), os.path.join("data/vi/train", "test_" + file))
+
+count_labels("data/vi/valid")
