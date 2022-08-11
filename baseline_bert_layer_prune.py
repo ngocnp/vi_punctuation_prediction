@@ -19,7 +19,7 @@ batch_size = 8
 label_all_tokens = True
 data_factor = 0.1  # train and test on x percent of the data
 sequence_length = 512
-label_2_id = {"O": 0, ".": 1, ",": 2, "?": 3, "!": 4, ";": 5, ":": 6}
+label_2_id = {"O": 0, ".": 1, ",": 2, "?": 3, "!": 4, ":": 5}
 
 ## load data
 
