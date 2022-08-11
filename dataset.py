@@ -78,7 +78,7 @@ def load(path):
     data = []
     list_files = []
     for r, d, f in os.walk(path):
-        list_files.extend([os.path.join(path, file) for file in f if file.endswith(".txt")])
+        list_files.extend([os.path.join(r, file) for file in f if file.endswith(".txt")])
     for filepath in tqdm(list_files):
         each = load_each_file(filepath)
         data.append(each)
