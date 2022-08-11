@@ -159,4 +159,13 @@ def join_train_and_test():
         if file.endswith(".txt"):
             shutil.copyfile(os.path.join("data/vi/test", file), os.path.join("data/vi/train", "test_" + file))
 
-count_labels("data/vi/valid")
+# count_labels("data/vi/valid")
+
+
+def count_files(path):
+    count = 0
+    for r, d, f in os.walk(path):
+        count += len([os.path.join(path, file) for file in f if file.endswith(".txt")])
+    return count
+
+print(count_files("data/vi/train"))
