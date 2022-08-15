@@ -4,7 +4,7 @@ import re
 import torch
 
 
-class PunctuationModel():
+class PunctuationModel:
     def __init__(self, model, label_dict=None) -> None:
         if torch.cuda.is_available():
             self.pipe = pipeline("ner", model, grouped_entities=False, device=0)
